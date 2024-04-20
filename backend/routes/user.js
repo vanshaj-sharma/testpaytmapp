@@ -66,7 +66,6 @@ router.post("/signin", async (req, res) => {
     res.json({
       token: token,
     });
-
     return;
   }
   res.status(411).json({
