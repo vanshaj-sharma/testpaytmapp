@@ -3,7 +3,7 @@ const zod = require("zod");
 const { User } = require("../db");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("../config");
+const { JWT_SECRET } = require("../config");
 const { authMiddleware } = require("../middleware");
 
 const signupBody = zod.object({
@@ -94,7 +94,9 @@ router.put("/", authMiddleware, async (req, res) => {
   });
 });
 
-router.get("/bulk", authMiddleware, async (req, res) => {
+//add authroute here to prevent invalid users
+router.get("/bulk", async (req, res) => {
+  const filter = req.query.filter || "";
   const users = await User.find({
     $or: [
       {
