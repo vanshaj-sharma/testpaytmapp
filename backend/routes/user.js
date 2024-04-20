@@ -12,7 +12,7 @@ const signupBody = zod.object({
   password: zod.string(),
 });
 router.post("/signup", async (req, res) => {
-  const { success } = zod.safeParse(req.body);
+  const { success } = signupBody.safeParse(req.body);
   if (!success) {
     res.status(411).json({
       message: "Email already taken / Incorrect inputs",
@@ -51,7 +51,7 @@ const signinBody = zod.object({
   password: zod.string(),
 });
 router.post("/signin", async (req, res) => {
-  const { success } = zod.safeParse(req.body);
+  const { success } = signinBody.safeParse(req.body);
   if (!success) {
     res.status(411).json({ message: "Incorrect inputs" });
   }
