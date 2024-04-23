@@ -1,14 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "./Button";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
-  const [users, setUsers] = useState([
-    {
-      firstName: "Vanshaj",
-      lastName: "Sharma",
-      _id: 1,
-    },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [filter, setFilter] = useState("");
+  const [name, setName] = useState("");
+
+  //fetch info on current user
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/v1/user/getmyinfo", {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setName(res.data.firstName);
+      });
+  }, []);
+
+  //fill
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/api/v1/user/bulk?filter=" + filter, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+      })
+      .then((res) => {
+        setUsers(res.data.user.filter((u) => u.firstName != name));
+        //removed current user information
+        // setUsers(users.filter((u) => u.firstName != name));
+      });
+  }, [filter, name]);
 
   return (
     <>
@@ -18,16 +44,21 @@ const Users = () => {
           type="text"
           placeholder="Search Users: "
           className="w-full px-2 py-1 border rounded border-slate-200"
+          onChange={(e) => {
+            setFilter(e.target.value);
+          }}
         />
       </div>
       <div className="pt-2">
-        {users && users.map((user) => <DisplayUser user={user} />)}
+        {users &&
+          users.map((user) => <DisplayUser key={user._id} user={user} />)}
       </div>
     </>
   );
 };
 
 const DisplayUser = ({ user }) => {
+  const navigate = useNavigate();
   return (
     <div className="flex justify-between pt-1">
       <div className="flex">
@@ -42,7 +73,12 @@ const DisplayUser = ({ user }) => {
       </div>
 
       <div className="flex flex-col justify-center h-ful">
-        <Button label={"Send Money"} />
+        <Button
+          label={"Send Money"}
+          onClick={(e) => {
+            navigate(`/send?id${user._id}&name=${user.firstName}`);
+          }}
+        />
       </div>
     </div>
   );
