@@ -1,6 +1,12 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
 const SendMoney = () => {
+  const [searchParams] = useSearchParams();
+  const name = searchParams.get("name");
+  const id = searchParams.get("id");
+  const [amount, setAmount] = useState();
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-100 h-screen flex justify-center">
       <div className="h-full flex flex-col justify-center">
@@ -16,9 +22,9 @@ const SendMoney = () => {
           <div className="pt-2 pb-1">
             <div className="flex items-center space-x-4">
               <div className="rounded-full h-12 w-12 bg-green-500 flex items-center justify-center ">
-                <span className="text-2xl text-white">U</span>
+                <span className="text-2xl text-white">{name[0]}</span>
               </div>
-              <h2>User Name</h2>
+              <h2>{name}</h2>
             </div>
           </div>
 
@@ -36,12 +42,33 @@ const SendMoney = () => {
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 id="amount"
                 placeholder="Enter amount"
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                }}
               />
             </div>
           </div>
 
           {/* button component */}
-          <button className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
+          <button
+            className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white"
+            onClick={() => {
+              axios.post(
+                "http://localhost:3000/api/v1/account/transfer",
+                {
+                  to: id,
+                  amount: amount,
+                },
+                {
+                  headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                  },
+                }
+              );
+
+              navigate("/success");
+            }}
+          >
             Initiate Transfer
           </button>
         </div>

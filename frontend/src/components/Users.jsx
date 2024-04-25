@@ -76,7 +76,7 @@ const DisplayUser = ({ user }) => {
         <Button
           label={"Send Money"}
           onClick={(e) => {
-            navigate(`/send?id${user._id}&name=${user.firstName}`);
+            navigate(`/send?id=${user._id}&name=${user.firstName}`);
           }}
         />
       </div>
